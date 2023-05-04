@@ -238,7 +238,7 @@ def after_receiving(selen_ob, asn, post_info_list):
     selen_ob.type_keys_enter('ewm_mon_menu_warehouse_task_input_box', warehouse_task, True)
     selen_ob.click('ewm_menu_execute_button')
     selen_ob.click('ewm_mon_menu_more_methods_button')
-    selen_ob.wait(1)
+    selen_ob.wait(3)
     selen_ob.press_down(2)
     selen_ob.press_enter()
     selen_ob.wait(2)
