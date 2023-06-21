@@ -63,6 +63,8 @@ class SelenMethodsClass:
         elif environ == 'EWM_qwd_rfui':
             link = "https://qwd.deere.com/sap/bc/se/m/index.html?sap-client=410&sap-language=EN&sap-ui-version=personas" \
                    "&~transaction=/SCWM/RFUI&sap-personas-flavor=0A4387A111571EEDADCE70994AF99B59"
+        elif environ == 'QUAL_Packspec':
+            link = 'https://packspecqual.tal.deere.com/packagingspec/PackagingSpec'
         else:
             link = environ
 
@@ -82,6 +84,20 @@ class SelenMethodsClass:
         self.Steps.append('Deleted driver browser cookies successfully')
         self.driver.get(link)
         self.Steps.append('Driver retrieved link: ' + link + ' link successfully')
+
+    def open_two_tabs_and_switch(self, link_1, link_2):
+        self.launch_link(link_1)
+        self.driver.execute_script("window.open('" + link_2 + "');")
+        window_name_1 = self.driver.window_handles[0]
+        self.driver.switch_to.window(window_name=window_name_1)
+
+    def switch_to_window_2(self):
+        window_name_2 = self.driver.window_handles[1]
+        self.driver.switch_to.window(window_name=window_name_2)
+
+    def switch_to_window_1(self):
+        window_name_1 = self.driver.window_handles[0]
+        self.driver.switch_to.window(window_name=window_name_1)
 
     def take_screenshot(self, screenshot_path):
         self.driver.save_screenshot(screenshot_path)

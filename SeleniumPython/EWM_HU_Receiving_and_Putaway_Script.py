@@ -5,6 +5,7 @@ import win32clipboard
 import CreateData
 import ExportScriptResults
 import pyautogui
+import os.path
 
 
 def manage_os_popup():
@@ -117,8 +118,8 @@ def grab_prelim_info(selen_ob, part_number, pre_info_list):
     pre_info_list.append(fix_bin_stor_type)
 
     enter_trans_code(selen_ob, '/n/scwm/mon')
-    selen_ob.type_keys_enter('ewm_mon_menu_warehouse_no_input_box', 'D200', True)
-    selen_ob.type_keys_enter('ewm_mon_menu_monitor_input_box', 'SAP', True)
+    selen_ob.type_keys_enter('ewm_mon_menu_warehouse_no_input_box', 'D200', False)
+    selen_ob.type_keys_enter('ewm_mon_menu_monitor_input_box', 'SAP', False)
     selen_ob.click('ewm_menu_execute_button')
 
     selen_ob.wait(1)
@@ -174,7 +175,7 @@ def grab_prelim_info(selen_ob, part_number, pre_info_list):
     # ///////////////////////////////////////////////////////
 
     selen_ob.click('ewm_mon_menu_collapse_all_button')
-    selen_ob.wait(2)
+    selen_ob.wait(4)
     selen_ob.choose_node('7')
     selen_ob.wait(1)
     selen_ob.choose_folder_option('ewm_mon_menu_warehouse_attribute_folder_option_', '1')
@@ -216,8 +217,8 @@ def grab_prelim_info(selen_ob, part_number, pre_info_list):
 
 def after_receiving(selen_ob, asn, post_info_list):
     enter_trans_code(selen_ob, '/n/scwm/mon')
-    selen_ob.type_keys_enter('ewm_mon_menu_warehouse_no_input_box', 'D200', True)
-    selen_ob.type_keys_enter('ewm_mon_menu_monitor_input_box', 'SAP', True)
+    selen_ob.type_keys_enter('ewm_mon_menu_warehouse_no_input_box', 'D200', False)
+    selen_ob.type_keys_enter('ewm_mon_menu_monitor_input_box', 'SAP', False)
     selen_ob.click('ewm_menu_execute_button')
     selen_ob.click('ewm_mon_menu_collapse_all_button')
     selen_ob.wait(2)
@@ -238,7 +239,7 @@ def after_receiving(selen_ob, asn, post_info_list):
     selen_ob.type_keys_enter('ewm_mon_menu_warehouse_task_input_box', warehouse_task, True)
     selen_ob.click('ewm_menu_execute_button')
     selen_ob.click('ewm_mon_menu_more_methods_button')
-    selen_ob.wait(3)
+    selen_ob.wait(1)
     selen_ob.press_down(2)
     selen_ob.press_enter()
     selen_ob.wait(2)
@@ -276,7 +277,7 @@ def download_spreadsheet(selen_ob):
 
     download_folder = os.path.expanduser("~") + "/Downloads/"
     file_path = download_folder + file_name
-    selen_ob.wait(5)
+    selen_ob.wait(8)
 
     return file_path
 
