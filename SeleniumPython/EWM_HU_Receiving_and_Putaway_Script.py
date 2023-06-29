@@ -364,10 +364,11 @@ def main():
     download_folder = os.path.expanduser("~") + "/Downloads/"
     ewm_file_path = download_folder + 'AutoTestingFields.xlsx'
     main_df = pd.read_excel(ewm_file_path, dtype=str)
-    length = len(main_df.index)
 
+    length = len(main_df.index)
     temp_df = main_df.loc[main_df.isna().any(axis=1)].head(1)
     row_to_start_index = temp_df.index[0]
+
     is_hu_cell_empty = pd.isna(temp_df['HU NUMBER'].iloc[0])
     is_stad_pack_mat_cell_filled = not (pd.isna(temp_df['STANDARD PACK MAT'].iloc[0]))
     is_receiving_row_blank = is_hu_cell_empty and is_stad_pack_mat_cell_filled
@@ -459,6 +460,8 @@ def main():
         with pd.ExcelWriter(ewm_file_path, mode="a", engine="openpyxl", if_sheet_exists="overlay") as writer:
             post_info_df.style.set_properties(**{'background-color': '#00B0F0', 'color': 'black'}).to_excel \
                 (writer, sheet_name="Sheet1", header=False, startrow=row_to_start_index + 1, startcol=17, index=False)
+
+        os.system(ewm_file_path)
 
         # selen_ob.get_driver().quit()
         # print('Closed automated browser window\n')

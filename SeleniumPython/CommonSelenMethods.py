@@ -1,5 +1,6 @@
 from selenium.common import TimeoutException, ElementClickInterceptedException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -164,6 +165,18 @@ class SelenMethodsClass:
             return False
         # self.wait(def_wait)
 
+    def create_wait_3(self, element_name):
+        # self.wait(def_wait)
+        element = self.d[element_name]
+        try:
+            create_wait = WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located(element))
+            self.Steps.append('Created wait object for element: ' + element_name)
+            return create_wait
+        except TimeoutException:
+            self.Steps.append('Timed out trying to find element: ' + element_name)
+            return False
+        # self.wait(def_wait)
+
     def wait(self, wait):
         time.sleep(wait)
         self.Steps.append('Waited ' + str(wait) + ' seconds successfully')
@@ -293,19 +306,19 @@ class SelenMethodsClass:
             return False
 
     def store_field_from_ewm_table(self, row_num, col_num):
-        self.get_d().update({'Table_Value': ((By.XPATH, '//td[contains(@id, "rows-row' + row_num + '-col' + col_num +
+        self.get_d().update({'Table_Value': (('xpath', '//td[contains(@id, "rows-row' + row_num + '-col' + col_num +
                                               '")]' + '/descendant::input[1]'))})
         self.Steps.append('Added table_Value to dictionary')
         return self.store_attribute_of_element('Table_Value', 'value')
 
     def click_field_from_ewm_table(self, row_num, col_num):
-        self.get_d().update({'Table_Value': ((By.XPATH, '//td[contains(@id, "rows-row' + row_num + '-col' + col_num
+        self.get_d().update({'Table_Value': (('xpath', '//td[contains(@id, "rows-row' + row_num + '-col' + col_num
                                               + '")]' + '/descendant::div[3][contains(@id, "content")]'))})
         self.Steps.append('Added table_Value to dictionary')
         self.click('Table_Value')
 
     def double_click_field_from_ewm_table(self, row_num, col_num):
-        self.get_d().update({'Table_Value': ((By.XPATH, '//td[contains(@id, "rows-row' + row_num + '-col' + col_num
+        self.get_d().update({'Table_Value': (('xpath', '//td[contains(@id, "rows-row' + row_num + '-col' + col_num
                                               + '")]' + '/descendant::div[3][contains(@id, "content")]'))})
         self.Steps.append('Added table_Value to dictionary')
         self.double_click('Table_Value')
@@ -320,10 +333,46 @@ class SelenMethodsClass:
         self.double_click(element_name + num)
         self.Steps.append('Chose folder option: ' + element_name + num)
 
+    def choose_first_pkg_num_table_value(self, pkg_num):
+        self.get_d().update({'packspec_menu_pkg_num_table_value': ('xpath', '(//td[contains(text(), "' + pkg_num + '")])[1]')})
+        self.click('packspec_menu_pkg_num_table_value')
+        self.Steps.append('Added table_Value to dictionary')
+
+    def delete_all_rows_in_pkg_bom_table(self):
+        self.set_timeout(2)
+        there_are_rows_left = True
+        while there_are_rows_left:
+            try:
+                self.click('packspec_menu_pkg_bom_table_row_1')
+                self.wait(2)
+            except AttributeError:
+                there_are_rows_left = False
+
+        self.set_timeout(30)
+
+    def delete_all_rows_in_finished_cont_table(self):
+        self.set_timeout(2)
+        there_are_rows_left = True
+        while there_are_rows_left:
+            try:
+                self.click('packspec_menu_finished_cont_table_row_1')
+                self.wait(2)
+            except AttributeError:
+                there_are_rows_left = False
+
+        self.set_timeout(30)
+
+    def select_dropdown_option(self, select_element, option):
+        self.press_down(2)
+        # self.press_enter()
+        select = Select(self.create_wait_3(select_element))
+        select.select_by_value(option)
+        self.Steps.append('Chose option: ' + option + 'from select dropdown: ' + select_element)
+
     def choose_pix_trans_type_and_code_options(self, trans_type, trans_code):
-        self.get_d().update({'pix_trans_menu_saved_filter_submenu_trans_type_option': (By.XPATH, '(//option[@value="' +
+        self.get_d().update({'pix_trans_menu_saved_filter_submenu_trans_type_option': ('xpath', '(//option[@value="' +
                                                                                        trans_type + '"])[1]')})
-        self.get_d().update({'pix_trans_menu_saved_filter_submenu_trans_code_option': (By.XPATH, '(//option[@value="' +
+        self.get_d().update({'pix_trans_menu_saved_filter_submenu_trans_code_option': ('xpath', '(//option[@value="' +
                                                                                        trans_type + ' ' +
                                                                                        trans_code + '"])[1]')})
 
@@ -373,16 +422,19 @@ class SelenMethodsClass:
                     xpath_string = '//tr[@ondblclick=\"return doDefaultAction (\'dataForm:lview:dataTable:' + str(row) + \
                                    ':defaultactionbutton\');\"]'
 
-                    self.d['pix_trans_menu_table_trans_num'] = (By.XPATH, xpath_string + '//descendant::td[3]//descendant::span[1]')
+                    self.d['pix_trans_menu_table_trans_num'] = (
+                    'xpath', xpath_string + '//descendant::td[3]//descendant::span[1]')
                     table_row_trans_num = self.store_text_of_element('pix_trans_menu_table_trans_num')
 
                     if trans_num == table_row_trans_num:
-                        self.d['pix_trans_menu_table_trans_check_box'] = (By.XPATH, xpath_string + '//descendant::td[1]//descendant::input[1]')
+                        self.d['pix_trans_menu_table_trans_check_box'] = (
+                        'xpath', xpath_string + '//descendant::td[1]//descendant::input[1]')
 
                         self.click('pix_trans_menu_table_trans_check_box')
                         self.click('pix_trans_menu_resend_button')
                         self.set_timeout(10)
-                        self.d['pix_trans_menu_table_trans_status'] = (By.XPATH, '//descendant::td[12]//descendant::span[text()="Unprocessed"][1]')
+                        self.d['pix_trans_menu_table_trans_status'] = (
+                        'xpath', '//descendant::td[12]//descendant::span[text()="Unprocessed"][1]')
                         self.create_wait('pix_trans_menu_table_trans_status')
                         self.set_timeout(60)
 
@@ -393,7 +445,8 @@ class SelenMethodsClass:
 
                 if found_row_with_trans_num:
                     break
-                elif 'changeTableClicked' in self.store_attribute_of_element('pix_trans_menu_table_next_button', 'onclick'):
+                elif 'changeTableClicked' in self.store_attribute_of_element('pix_trans_menu_table_next_button',
+                                                                             'onclick'):
                     self.click('pix_trans_menu_table_next_button')
                     self.wait(3)
                     print('Going into next set of table rows\n')

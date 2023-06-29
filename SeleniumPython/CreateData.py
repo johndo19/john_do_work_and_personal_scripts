@@ -19,7 +19,7 @@ def get_date_and_time():
 
 
 def set_timeout():
-    timeout = 240
+    timeout = 60
     return timeout
 
 

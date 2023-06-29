@@ -397,11 +397,30 @@ class ElementsDict:
 
         # Packspec Menu Input Boxes
         packspec_menu_part_number_input_box = ('xpath', '//input[@name="servPartNum" and @type="text"]')
+        packspec_menu_pkg_num_table_input_box = ('xpath', '//input[@id="seachBox" and @type="text" and @placeholder="'
+                                                          'Search for Pkg_Num..."]')
 
-        # Packspec Menu Dropdowns
-        packspec_menu_finished_cont_dropdown_arrow = (
-            'xpath', '(//td[@id="finishedCont-cell"]//descendant::span[3])[1]')
+        # Packspec Menu Dropdown Arrows
+        packspec_menu_category_dropdown_arrow = ('xpath', '(//td[@id="category-cell"]//descendant::span[3])[1]')
+        packspec_menu_sub_category_dropdown_arrow = ('xpath', '(//td[@id="subCategory-cell"]//descendant::span[3])[1]')
+        packspec_menu_pack_bom_dropdown_arrow = ('xpath', '(//td[@id="packagingBom-cell"]//descendant::span[3])[1]')
+        packspec_menu_uti_flex_dropdown_arrow = ('xpath', '(//td[@id="utiflex-cell"]//descendant::span[3])[1]')
         packspec_menu_dimensions_of_dropdown_arrow = ('xpath', '(//td[@id="dimensionOf-cell"]//descendant::span[3])[1]')
+        packspec_menu_dfc_dropdown_arrow = ('xpath', '(//td[@id="dfc-cell"]//descendant::span[3])[1]')
+        packspec_menu_finished_cont_dropdown_arrow = ('xpath', '(//td[@id="finishedCont-cell"]//descendant::span[3])[1]')
+
+        # Packspec Menu Dropdown Input Boxes
+        packspec_menu_category_dropdown_input_box = ('xpath', '(//td[@id="category-cell"]//descendant::span[1])//descendant::input')
+        packspec_menu_sub_category_dropdown_input_box = ('xpath', '(//td[@id="subCategory-cell"]//descendant::span[1])//descendant::input')
+        packspec_menu_pack_bom_dropdown_input_box = ('xpath', '(//td[@id="packagingBom-cell"]//descendant::span[1])//descendant::input')
+        packspec_menu_uti_flex_dropdown_input_box = ('xpath', '(//td[@id="utiflex-cell"]//descendant::span[1])//descendant::input')
+        packspec_menu_dimensions_of_dropdown_input_box = ('xpath', '(//td[@id="dimensionOf-cell"]//descendant::span[1])//descendant::input')
+        packspec_menu_dfc_dropdown_input_box = ('xpath', '(//td[@id="dfc-cell"]//descendant::span[1])//descendant::input')
+        packspec_menu_finished_cont_dropdown_input_box = ('xpath', '(//td[@id="finishedCont-cell"]//descendant::span[1])//descendant::input')
+
+        # Packspec Menu Table Values
+        packspec_menu_finished_cont_table_row_1 = ('xpath', '(//img[@onclick="deleteFCRow(this)"])[1]')
+        packspec_menu_pkg_bom_table_row_1 = ('xpath', '(//img[@onclick="deleterow(this)"])[1]')
 
         # ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -701,10 +720,29 @@ class ElementsDict:
 
             # Packspec Menu Input Boxes
             'packspec_menu_part_number_input_box': packspec_menu_part_number_input_box,
+            'packspec_menu_pkg_num_table_input_box': packspec_menu_pkg_num_table_input_box,
 
-            # Packspec Menu Dropdowns
-            'packspec_menu_finished_cont_dropdown_arrow': packspec_menu_finished_cont_dropdown_arrow,
+            # Packspec Menu Dropdown Arrows
+            'packspec_menu_category_dropdown_arrow': packspec_menu_category_dropdown_arrow,
+            'packspec_menu_sub_category_dropdown_arrow': packspec_menu_sub_category_dropdown_arrow,
+            'packspec_menu_pack_bom_dropdown_arrow': packspec_menu_pack_bom_dropdown_arrow,
+            'packspec_menu_uti_flex_dropdown_arrow': packspec_menu_uti_flex_dropdown_arrow,
             'packspec_menu_dimensions_of_dropdown_arrow': packspec_menu_dimensions_of_dropdown_arrow,
+            'packspec_menu_dfc_dropdown_arrow': packspec_menu_dfc_dropdown_arrow,
+            'packspec_menu_finished_cont_dropdown_arrow': packspec_menu_finished_cont_dropdown_arrow,
+
+            # Packspec Menu Dropdown Input Boxes
+            'packspec_menu_category_dropdown_input_box': packspec_menu_category_dropdown_input_box,
+            'packspec_menu_sub_category_dropdown_input_box': packspec_menu_sub_category_dropdown_input_box,
+            'packspec_menu_pack_bom_dropdown_input_box': packspec_menu_pack_bom_dropdown_input_box,
+            'packspec_menu_uti_flex_dropdown_input_box': packspec_menu_uti_flex_dropdown_input_box,
+            'packspec_menu_dimensions_of_dropdown_input_box': packspec_menu_dimensions_of_dropdown_input_box,
+            'packspec_menu_dfc_dropdown_input_box': packspec_menu_dfc_dropdown_input_box,
+            'packspec_menu_finished_cont_dropdown_input_box': packspec_menu_finished_cont_dropdown_input_box,
+
+            # Packspec Menu Table Values
+            'packspec_menu_finished_cont_table_row_1': packspec_menu_finished_cont_table_row_1,
+            'packspec_menu_pkg_bom_table_row_1': packspec_menu_pkg_bom_table_row_1
         }
 
         self.d = login_d | search_menu_d | user_profile_d | post_message_d | windows_d | uni_d | asns_menu_d | \
