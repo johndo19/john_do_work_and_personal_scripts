@@ -84,10 +84,11 @@ def read_sap_packspec_data(selen_ob, part_number, info_list):
     info_list.append(date)
     selen_ob.double_click_field_from_ewm_table(last_index, '0')
 
-    selen_ob.set_timeout(8)
-    if selen_ob.create_wait('ewm_menu_continue_button'):
+    selen_ob.set_timeout(5)
+    try:
         selen_ob.click('ewm_menu_continue_button')
-    selen_ob.set_timeout(30)
+    except AttributeError:
+        selen_ob.set_timeout(30)
 
     selen_ob.click('ewm_packspec_sub_menu_product_option')
 
@@ -140,13 +141,14 @@ def read_uom_table(selen_ob, part_number, post_info_list):
     selen_ob.type_keys_enter('ewm_mon_menu_product_input_box', part_number, False)
     selen_ob.click('ewm_menu_execute_button')
 
+    selen_ob.click_field_from_ewm_table('0', '0')
+
     selen_ob.set_timeout(5)
     try:
         selen_ob.click('ewm_menu_continue_button')
     except AttributeError:
         selen_ob.set_timeout(30)
 
-    selen_ob.double_click_field_from_ewm_table('0', '0')
     selen_ob.click('ewm_packspec_sub_menu_uom_option')
 
     not_found_qdy_row = True
@@ -299,6 +301,7 @@ def main():
                 pre_info_list = []
                 post_info_list = []
 
+                print('Beginning line: ' + str(row_to_start_index + num + 1) + ' of: ' + str(length))
                 print("pre-info ===================")
 
                 if num == 0:
@@ -337,12 +340,14 @@ def main():
                 read_rt3_data(part_number)
 
                 num = num + 1
-                print('end ========================')
+                print('end ========================\n')
 
             else:
                 part_number = str(full_info_df['Part Number'].iloc[:, 0].iloc[row])
                 pkg_num = str(full_info_df['Pkg Num'].iloc[:, 0].iloc[row])
                 post_info_list = []
+
+                print('Beginning line: ' + str(row_to_start_index + num + 1) + ' of: ' + str(length))
 
                 selen_ob.wait(10)
                 selen_ob.switch_to_window_2()
@@ -368,7 +373,7 @@ def main():
                 read_rt3_data(part_number)
 
                 num = num + 1
-                print('end ========================')
+                print('end ========================\n')
 
     finally:
         # first setup for exporting script results, get time stamp, directory and screenshot paths - don't change
@@ -391,8 +396,6 @@ def main():
             post_info_df.style.set_properties(**{'background-color': '#C6E0B4', 'color': 'black'}).to_excel \
                 (writer, sheet_name="Post_Info", header=False, startrow=row_to_start_index + 1, startcol=2,
                  index=False)
-
-        os.system(packspec_testing_file_path)
 
         # selen_ob.get_driver().quit()
         # print('Closed automated browser window\n')

@@ -461,8 +461,6 @@ def main():
             post_info_df.style.set_properties(**{'background-color': '#00B0F0', 'color': 'black'}).to_excel \
                 (writer, sheet_name="Sheet1", header=False, startrow=row_to_start_index + 1, startcol=17, index=False)
 
-        os.system(ewm_file_path)
-
         # selen_ob.get_driver().quit()
         # print('Closed automated browser window\n')
         print('SCRIPT HAS FINISHED RUNNING\n')
