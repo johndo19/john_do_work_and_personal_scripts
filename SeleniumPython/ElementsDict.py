@@ -394,6 +394,7 @@ class ElementsDict:
         packspec_menu_submit_button = ('xpath', '//b[text()="Submit"]')
         packspec_menu_spec_view_button = ('xpath', '//b[text()="spec View"]')
         packspec_menu_audit_override_button = ('xpath', '//button[text()="Audit Override"]')
+        packspec_menu_error_ok_button = ('xpath', '//button[@id="closeErrorModal" and text()="OK"]')
 
         # Packspec Menu Input Boxes
         packspec_menu_part_number_input_box = ('xpath', '//input[@name="servPartNum" and @type="text"]')
@@ -421,6 +422,7 @@ class ElementsDict:
         # Packspec Menu Table Values
         packspec_menu_finished_cont_table_row_1 = ('xpath', '(//img[@onclick="deleteFCRow(this)"])[1]')
         packspec_menu_pkg_bom_table_row_1 = ('xpath', '(//img[@onclick="deleterow(this)"])[1]')
+        packspec_menu_error_message = ('xpath', '//p[@id="errorMessage"]')
 
         # ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -717,6 +719,7 @@ class ElementsDict:
             'packspec_menu_submit_button': packspec_menu_submit_button,
             'packspec_menu_spec_view_button': packspec_menu_spec_view_button,
             'packspec_menu_audit_override_button': packspec_menu_audit_override_button,
+            'packspec_menu_error_ok_button': packspec_menu_error_ok_button,
 
             # Packspec Menu Input Boxes
             'packspec_menu_part_number_input_box': packspec_menu_part_number_input_box,
@@ -742,7 +745,8 @@ class ElementsDict:
 
             # Packspec Menu Table Values
             'packspec_menu_finished_cont_table_row_1': packspec_menu_finished_cont_table_row_1,
-            'packspec_menu_pkg_bom_table_row_1': packspec_menu_pkg_bom_table_row_1
+            'packspec_menu_pkg_bom_table_row_1': packspec_menu_pkg_bom_table_row_1,
+            'packspec_menu_error_message': packspec_menu_error_message,
         }
 
         self.d = login_d | search_menu_d | user_profile_d | post_message_d | windows_d | uni_d | asns_menu_d | \
@@ -750,5 +754,7 @@ class ElementsDict:
                  sci_report_menu_d | ewm_menu_d | ewm_rf_menu_d | ewm_mon_menu_d | ewm_binmat_menu_d | \
                  ewm_storage_bin_sub_menu_d | ewm_packspec_sub_menu_d | ewm_warehouse_prod_maint_sub_menu_d | \
                  pix_trans_menu_d | packspec_menu_d
+        self.d.update()
 
         return self.d
+

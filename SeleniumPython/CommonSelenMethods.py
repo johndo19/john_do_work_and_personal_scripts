@@ -142,7 +142,7 @@ class SelenMethodsClass:
         self.Steps.append('Changed position value of element: ' + element_name)
 
     def create_wait(self, element_name):
-        # self.wait(def_wait)
+        self.wait(def_wait)
         element = self.d[element_name]
         try:
             create_wait = WebDriverWait(self.driver, self.timeout).until(EC.element_to_be_clickable(element))
@@ -151,10 +151,10 @@ class SelenMethodsClass:
         except TimeoutException:
             self.Steps.append('Timed out trying to find element: ' + element_name)
             return False
-        # self.wait(def_wait)
+        self.wait(def_wait)
 
     def create_wait_2(self, element_name):
-        # self.wait(def_wait)
+        self.wait(def_wait)
         element = self.d[element_name]
         try:
             create_wait = WebDriverWait(self.driver, self.timeout).until(EC.visibility_of_element_located(element))
@@ -163,10 +163,10 @@ class SelenMethodsClass:
         except TimeoutException:
             self.Steps.append('Timed out trying to find element: ' + element_name)
             return False
-        # self.wait(def_wait)
+        self.wait(def_wait)
 
     def create_wait_3(self, element_name):
-        # self.wait(def_wait)
+        self.wait(def_wait)
         element = self.d[element_name]
         try:
             create_wait = WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located(element))
@@ -175,7 +175,7 @@ class SelenMethodsClass:
         except TimeoutException:
             self.Steps.append('Timed out trying to find element: ' + element_name)
             return False
-        # self.wait(def_wait)
+        self.wait(def_wait)
 
     def wait(self, wait):
         time.sleep(wait)
@@ -344,11 +344,11 @@ class SelenMethodsClass:
         while there_are_rows_left:
             try:
                 self.click('packspec_menu_pkg_bom_table_row_1')
-                self.wait(2)
+                self.wait(1)
             except AttributeError:
                 there_are_rows_left = False
 
-        self.set_timeout(30)
+        self.set_timeout(60)
 
     def delete_all_rows_in_finished_cont_table(self):
         self.set_timeout(2)
@@ -356,11 +356,11 @@ class SelenMethodsClass:
         while there_are_rows_left:
             try:
                 self.click('packspec_menu_finished_cont_table_row_1')
-                self.wait(2)
+                self.wait(1)
             except AttributeError:
                 there_are_rows_left = False
 
-        self.set_timeout(30)
+        self.set_timeout(60)
 
     def select_dropdown_option(self, select_element, option):
         self.press_down(2)

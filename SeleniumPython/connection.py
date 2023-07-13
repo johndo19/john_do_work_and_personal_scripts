@@ -58,7 +58,7 @@ def connect(landscape: str, new_session: bool = False):
     try:
         sap_auto = win32com.client.GetObject("SAPGUI")
     except BaseException:  # pylint: disable=broad-except
-        print(sys.exc_info()[0])
+        # print(sys.exc_info()[0])
         os.startfile("C:/Program Files (x86)/SAP/FrontEnd/SAPgui/SapLogon.exe")
         time.sleep(7.5)
         sap_auto = win32com.client.GetObject("SAPGUI")

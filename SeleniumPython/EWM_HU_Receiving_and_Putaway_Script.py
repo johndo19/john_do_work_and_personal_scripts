@@ -32,12 +32,18 @@ def launch_rfui(selen_ob, environ, num, resource):
     selen_ob.clear_input_box('ewm_rf_menu_resource_input_box')
     selen_ob.type_keys_enter('ewm_rf_menu_resource_input_box', 'EBU312Q', True)
     selen_ob.wait(1)
-    selen_ob.click_and_enter('ewm_rf_menu_resource_input_box')
     # selen_ob.click('ewm_rf_menu_start_button')
-    selen_ob.click('ewm_rf_menu_inbound_process_button')
+    selen_ob.set_timeout(3)
+    try:
+        selen_ob.click('ewm_rf_menu_inbound_process_button')
+        selen_ob.set_timeout(30)
+    except AttributeError:
+        selen_ob.click_and_enter('ewm_rf_menu_resource_input_box')
+        selen_ob.click('ewm_rf_menu_inbound_process_button')
+        selen_ob.set_timeout(30)
     selen_ob.wait(2)
     selen_ob.change_window_size(100, 1000)
-    selen_ob.wait(7)
+    selen_ob.wait(5)
 
 
 def hu_receiving(selen_ob, asn, part_number, qty, pack_mat, post_info_list):
@@ -64,16 +70,21 @@ def hu_receiving(selen_ob, asn, part_number, qty, pack_mat, post_info_list):
 
     # selen_ob.click('ewm_rf_menu_unload_button')
     selen_ob.click('ewm_rf_menu_post_gr_button')
+    selen_ob.wait(1)
     selen_ob.click('ewm_rf_menu_create_button')
     selen_ob.wait(3)
     selen_ob.click('ewm_rf_menu_confirm_button')
-
+    selen_ob.wait(1)
     selen_ob.click('ewm_rf_menu_back_button')
+    selen_ob.wait(1)
     selen_ob.click('ewm_rf_menu_back_button')
+    selen_ob.wait(1)
     selen_ob.click('ewm_rf_menu_back_button')
-
+    selen_ob.wait(1)
     selen_ob.click('ewm_rf_menu_back_button')
+    selen_ob.wait(1)
     selen_ob.click('ewm_rf_menu_back_button')
+    selen_ob.wait(1)
 
     return hu
 
@@ -97,6 +108,7 @@ def hu_putaway(selen_ob, hu):
             selen_ob.wait(2)
 
     selen_ob.click('ewm_rf_menu_back_button')
+    selen_ob.wait(1)
 
 
 def enter_trans_code(selen_ob, code):
@@ -107,6 +119,7 @@ def grab_prelim_info(selen_ob, part_number, pre_info_list):
     enter_trans_code(selen_ob, '/n/scwm/binmat')
     selen_ob.type_keys_enter('ewm_binmat_menu_warehouse_no_input_box', 'D200', True)
     selen_ob.type_keys_enter('ewm_binmat_menu_product_input_box', part_number, True)
+    selen_ob.wait(1)
     selen_ob.click('ewm_menu_execute_button')
 
     fixed_bin = selen_ob.store_field_from_ewm_table('0', '2')
@@ -150,8 +163,7 @@ def grab_prelim_info(selen_ob, part_number, pre_info_list):
     print('Fixed bin capacity weight: ' + fix_bin_cap_wgt)
     pre_info_list.append(fix_bin_cap_wgt)
 
-    fix_bin_cap_used_wgt = selen_ob.store_attribute_of_element('ewm_storage_bin_sub_menu_weight_used_input_box',
-                                                               'value')
+    fix_bin_cap_used_wgt = selen_ob.store_attribute_of_element('ewm_storage_bin_sub_menu_weight_used_input_box', 'value')
     print('Fixed bin capacity used weight: ' + fix_bin_cap_used_wgt)
     pre_info_list.append(fix_bin_cap_used_wgt)
 
@@ -197,6 +209,7 @@ def grab_prelim_info(selen_ob, part_number, pre_info_list):
     selen_ob.click('ewm_packspec_sub_menu_options_arrow_2')
     selen_ob.click('ewm_packspec_sub_menu_product_option_text')
     selen_ob.type_keys_enter('ewm_packspec_sub_menu_product_input_box', part_number, True)
+    selen_ob.wait(1)
     selen_ob.click('ewm_packspec_sub_menu_perform_search_button')
 
     file_path_2 = download_spreadsheet(selen_ob)
@@ -220,6 +233,7 @@ def after_receiving(selen_ob, asn, post_info_list):
     selen_ob.type_keys_enter('ewm_mon_menu_warehouse_no_input_box', 'D200', False)
     selen_ob.type_keys_enter('ewm_mon_menu_monitor_input_box', 'SAP', False)
     selen_ob.click('ewm_menu_execute_button')
+    selen_ob.wait(1)
     selen_ob.click('ewm_mon_menu_collapse_all_button')
     selen_ob.wait(2)
     selen_ob.choose_node('2')
@@ -369,9 +383,9 @@ def main():
     temp_df = main_df.loc[main_df.isna().any(axis=1)].head(1)
     row_to_start_index = temp_df.index[0]
 
-    is_hu_cell_empty = pd.isna(temp_df['HU NUMBER'].iloc[0])
     is_stad_pack_mat_cell_filled = not (pd.isna(temp_df['STANDARD PACK MAT'].iloc[0]))
-    is_receiving_row_blank = is_hu_cell_empty and is_stad_pack_mat_cell_filled
+    is_hu_cell_empty = pd.isna(temp_df['HU NUMBER'].iloc[0])
+    is_receiving_row_blank = is_stad_pack_mat_cell_filled and is_hu_cell_empty
 
     pre_info_df = pd.DataFrame(columns=['FIXED BIN', 'FIXED BIN STOR TYPE', 'FIXED BIN STOR SECT', 'FIXED BIN INV (QTY)'
         , 'FIXED BIN CAP(VOL)', 'FIXED BIN CAP USED(VOL)', 'FIXED BIN CAP(WGT)',
@@ -417,6 +431,7 @@ def main():
                 after_receiving(selen_ob, asn, post_info_list)
                 post_info_df.loc[len(post_info_df.index)] = post_info_list
                 print('Finished line: ' + str(num) + ', index ' + str(row) + ' in excel file')
+
             else:
                 # just do receiving/post info
                 asn = str(main_df['ASN'].iloc[row])
@@ -432,6 +447,7 @@ def main():
                 hu_putaway(selen_ob, hu)
 
                 selen_ob.click('ewm_rf_menu_exit_button')
+                selen_ob.wait(1)
                 selen_ob.click('ewm_rf_menu_save_button')
                 selen_ob.wait(2)
                 selen_ob.change_window_size(1800, 1000)
@@ -454,11 +470,11 @@ def main():
         ExportScriptResults.create_and_export_excel_results(selen_ob, Status, time_stamp, main_df, script_results_path)
 
         with pd.ExcelWriter(ewm_file_path, mode="a", engine="openpyxl", if_sheet_exists="overlay") as writer:
-            pre_info_df.style.set_properties(**{'background-color': '#FFFF00', 'color': 'black'}).to_excel \
+            pre_info_df.style.set_properties(**{'background-color': '#FFFF00', 'color': 'black', 'border': '1.3px solid black'}).to_excel \
                 (writer, sheet_name="Sheet1", header=False, startrow=row_to_start_index + 1, startcol=4, index=False)
 
         with pd.ExcelWriter(ewm_file_path, mode="a", engine="openpyxl", if_sheet_exists="overlay") as writer:
-            post_info_df.style.set_properties(**{'background-color': '#00B0F0', 'color': 'black'}).to_excel \
+            post_info_df.style.set_properties(**{'background-color': '#00B0F0', 'color': 'black', 'border': '1.3px solid black'}).to_excel \
                 (writer, sheet_name="Sheet1", header=False, startrow=row_to_start_index + 1, startcol=17, index=False)
 
         # selen_ob.get_driver().quit()

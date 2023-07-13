@@ -2,6 +2,7 @@ import os
 import sys
 
 import pandas as pd
+
 import CreateData
 import ExportScriptResults
 import os.path
@@ -14,7 +15,9 @@ def enter_trans_code(selen_ob, code):
 
 def go_into_packspec_menu(selen_ob):
     enter_trans_code(selen_ob, '/n/scwm/packspec')
+    selen_ob.wait(0.5)
     selen_ob.click('ewm_packspec_sub_menu_options_arrow_2')
+    selen_ob.wait(0.5)
     selen_ob.click('ewm_packspec_sub_menu_product_option_text')
 
 
@@ -26,13 +29,14 @@ def go_into_mon_menu(selen_ob):
 
 
 def download_spreadsheet(selen_ob):
+    selen_ob.wait(0.5)
     selen_ob.click('ewm_mon_menu_export_button')
-    selen_ob.wait(1)
+    selen_ob.wait(0.5)
     selen_ob.press_down(1)
     selen_ob.press_enter()
-    selen_ob.wait(1)
+    selen_ob.wait(0.5)
     selen_ob.click('ewm_menu_continue_button')
-    selen_ob.wait(1)
+    selen_ob.wait(0.5)
     selen_ob.clear_input_box('ewm_mon_menu_export_input_box')
     date_stamp, time_stamp = CreateData.get_date_and_time()
     file_name = date_stamp + '_' + time_stamp + '.xlsx'
@@ -41,14 +45,14 @@ def download_spreadsheet(selen_ob):
 
     download_folder = os.path.expanduser("~") + "/Downloads/"
     file_path = download_folder + file_name
-    selen_ob.wait(8)
+    selen_ob.wait(5)
 
     return file_path
 
 
 def find_last_index_from_excel_file(file_path):
     df = pd.read_excel(file_path, dtype=str)
-    print('Found and set file to read\n')
+    print('Found and set file to read')
 
     last_index = str(len(df.index) - 1)
 
@@ -81,12 +85,16 @@ def read_sap_packspec_data(selen_ob, part_number, info_list):
 
     selen_ob.wait(3)
     date = selen_ob.store_field_from_ewm_table(last_index, '6')
+    if date == '':
+        date = 'X - No Date'
+    print(date)
     info_list.append(date)
     selen_ob.double_click_field_from_ewm_table(last_index, '0')
 
     selen_ob.set_timeout(5)
     try:
         selen_ob.click('ewm_menu_continue_button')
+        selen_ob.set_timeout(30)
     except AttributeError:
         selen_ob.set_timeout(30)
 
@@ -104,9 +112,16 @@ def read_sap_packspec_data(selen_ob, part_number, info_list):
     read_value_from_element(selen_ob, 'ewm_packspec_sub_menu_target_qty_input_box', info_list)
     read_value_from_element(selen_ob, 'ewm_packspec_sub_menu_total_qty_input_box', info_list)
 
-    pack_mat_1 = selen_ob.store_field_from_ewm_table('0', '1')
-    print(pack_mat_1)
-    info_list.append(pack_mat_1)
+    selen_ob.set_timeout(5)
+    try:
+        pack_mat_1 = selen_ob.store_field_from_ewm_table('0', '1')
+        print(pack_mat_1)
+        info_list.append(pack_mat_1)
+        selen_ob.set_timeout(30)
+    except AttributeError:
+        selen_ob.set_timeout(30)
+        print('X - No pack mat 1')
+        info_list.append('X - No pack mat 1')
 
     selen_ob.click('ewm_packspec_sub_menu_wght_vol_dim_option')
 
@@ -124,15 +139,33 @@ def read_sap_packspec_data(selen_ob, part_number, info_list):
     read_value_from_element(selen_ob, 'ewm_packspec_sub_menu_rnd_up_lim_input_box', info_list)
     read_value_from_element(selen_ob, 'ewm_packspec_sub_menu_round_up_circle', info_list)
 
-    selen_ob.click('ewm_packspec_sub_menu_lvl_three_stor_lvl_option')
+    selen_ob.set_timeout(5)
+    try:
+        selen_ob.click('ewm_packspec_sub_menu_lvl_three_stor_lvl_option')
+        selen_ob.set_timeout(30)
+    except AttributeError:
+        selen_ob.set_timeout(30)
+        selen_ob.click('ewm_menu_back_button')
+        info_list.append('X - No Level 3 stor lvl option')
+        return False
+
     selen_ob.click('ewm_packspec_sub_menu_assigned_elements_option')
 
-    pack_mat_2 = selen_ob.store_field_from_ewm_table('0', '1')
-    print(pack_mat_2)
-    info_list.append(pack_mat_2)
+    selen_ob.set_timeout(5)
+    try:
+        pack_mat_2 = selen_ob.store_field_from_ewm_table('0', '1')
+        print(pack_mat_2)
+        info_list.append(pack_mat_2)
+        selen_ob.set_timeout(30)
+    except AttributeError:
+        selen_ob.set_timeout(30)
+        print('X - No pack mat 2')
+        info_list.append('X - No pack mat 2')
 
     selen_ob.click('ewm_menu_back_button')
-    selen_ob.wait(4)
+    selen_ob.wait(2)
+
+    return True
 
 
 def read_uom_table(selen_ob, part_number, post_info_list):
@@ -146,6 +179,7 @@ def read_uom_table(selen_ob, part_number, post_info_list):
     selen_ob.set_timeout(5)
     try:
         selen_ob.click('ewm_menu_continue_button')
+        selen_ob.set_timeout(30)
     except AttributeError:
         selen_ob.set_timeout(30)
 
@@ -176,7 +210,7 @@ def choose_packspec_dropdown_option(selen_ob, element_name, choice):
     selen_ob.press_enter()
 
 
-def enter_packspec_info(selen_ob, part_number, pkg_num):
+def enter_packspec_info(selen_ob, part_number, pkg_num, post_info_list):
     selen_ob.clear_input_box('packspec_menu_part_number_input_box')
     selen_ob.type_keys_enter('packspec_menu_part_number_input_box', part_number, True)
     selen_ob.click('packspec_menu_spec_view_button')
@@ -200,10 +234,25 @@ def enter_packspec_info(selen_ob, part_number, pkg_num):
     choose_packspec_dropdown_option(selen_ob, 'packspec_menu_finished_cont_dropdown_input_box', 'W - ')
 
     selen_ob.click('packspec_menu_submit_button')
-    selen_ob.wait(12)
+
+    selen_ob.wait(10)
+    selen_ob.set_timeout(10)
+    try:
+        selen_ob.click('packspec_menu_error_message')
+        error_message = selen_ob.store_text_of_element('packspec_menu_error_message')
+        selen_ob.click('packspec_menu_error_ok_button')
+        post_info_list.append('Error when sending packspec: ' + error_message)
+        print('Error when sending packspec: ' + error_message)
+        for i in range(27):
+            post_info_list.append('X')
+        selen_ob.set_timeout(30)
+        return True
+    except AttributeError:
+        selen_ob.set_timeout(30)
+        return False
 
 
-def read_rt3_data(part_number):
+def read_rt3_data(part_number, info_list):
     session = connect('RT3')
     session.findById("wnd[0]/tbar[0]/okcd").text = "mm03"
     session.findById("wnd[0]").sendVKey(0)
@@ -242,6 +291,10 @@ def read_rt3_data(part_number):
     print(width)
     print(height)
 
+    info_list.append(length)
+    info_list.append(width)
+    info_list.append(height)
+
     session.findbyid("wnd[0]").close()
     session.findById("wnd[1]/usr/btnSPOP-OPTION1").press()
 
@@ -265,23 +318,24 @@ def main():
     temp_df = full_info_df.loc[full_info_df.isna().any(axis=1)].head(1)
     row_to_start_index = temp_df.index[0]
 
-    is_post_base_qty_cell_empty = pd.isna(temp_df['Base Qty'].iloc[:, 1].iloc[0])
     is_pre_base_qty_cell_filled = not (pd.isna(temp_df['Base Qty'].iloc[:, 0].iloc[0]))
-    is_post_df_blank = is_post_base_qty_cell_empty and is_pre_base_qty_cell_filled
+    is_post_base_qty_cell_empty = pd.isna(temp_df['Base Qty'].iloc[:, 1].iloc[0])
+    is_post_df_blank = is_pre_base_qty_cell_filled and is_post_base_qty_cell_empty
 
-    pre_info_df = pd.DataFrame(columns=['Date', 'Base Qty', 'Length', 'Width', 'Height', 'Vol.', 'Gross Wght', 'Target Qty',
-                                        'Total Qty', 'Pack Mat 1', 'Enter Wght Man. Checked',
+    pre_info_df = pd.DataFrame(columns=['Date', 'Base Qty', 'Length', 'Width', 'Height', 'Vol.', 'Gross Wght',
+                                        'Target Qty', 'Total Qty', 'Pack Mat 1', 'Enter Wght Man. Checked',
                                         'Enter Vol. Man. Checked', 'Enter Dim. Man. Checked', 'Ext. Step',
                                         'Min. Pack Size Checked', 'Rnd Up Lim.', 'Round Up Checked', 'Pack Mat 2',
                                         'UoM - Gross Weight', 'UoM - Net Weight', 'UoM - Vol.', 'UoM - Length',
-                                        'UoM - Width', 'UoM - Height'])
+                                        'UoM - Width', 'UoM - Height', 'RT3 - Length', 'RT3 - Width', 'RT3 - Height'])
 
-    post_info_df = pd.DataFrame(columns=['Date', 'Base Qty', 'Length', 'Width', 'Height', 'Vol.', 'Gross Wght', 'Target Qty',
-                                         'Total Qty', 'Pack Mat 1', 'Enter Wght Man. Checked',
+    post_info_df = pd.DataFrame(columns=['Date', 'Base Qty', 'Length', 'Width', 'Height', 'Vol.', 'Gross Wght',
+                                         'Target Qty', 'Total Qty', 'Pack Mat 1', 'Enter Wght Man. Checked',
                                          'Enter Vol. Man. Checked', 'Enter Dim. Man. Checked', 'Ext. Step',
                                          'Min. Pack Size Checked', 'Rnd Up Lim.', 'Round Up Checked', 'Pack Mat 2',
                                          'UoM - Gross Weight', 'UoM - Net Weight', 'UoM - Vol.', 'UoM - Length',
-                                         'UoM - Width', 'UoM - Height', 'Data Updated'])
+                                         'UoM - Width', 'UoM - Height', 'RT3 - Length', 'RT3 - Width', 'RT3 - Height',
+                                         'Data Updated'])
 
     print('Set pre-parameters\n')
 
@@ -297,17 +351,20 @@ def main():
         for row in range(row_to_start_index, length):
             if not (is_post_df_blank is True and num == 0):
                 part_number = str(full_info_df['Part Number'].iloc[:, 0].iloc[row])
-                pkg_num = str(full_info_df['Pkg Num'].iloc[:, 0].iloc[row])
+                pkg_num = str(full_info_df['Pkg Material'].iloc[:, 0].iloc[row])
                 pre_info_list = []
                 post_info_list = []
 
+                print("beg ------------------------------")
                 print('Beginning line: ' + str(row_to_start_index + num + 1) + ' of: ' + str(length))
-                print("pre-info ===================")
+                print('Part Number: ' + part_number)
+                print("pre-info =================")
 
                 if num == 0:
                     go_into_packspec_menu(selen_ob)
                 else:
                     enter_trans_code(selen_ob, '/n/scwm/packspec')
+
                 read_sap_packspec_data(selen_ob, part_number, pre_info_list)
 
                 if num == 0:
@@ -316,64 +373,75 @@ def main():
                     enter_trans_code(selen_ob, '/n/scwm/mon')
 
                 read_uom_table(selen_ob, part_number, pre_info_list)
+                read_rt3_data(part_number, pre_info_list)
+
                 pre_info_df.loc[len(pre_info_df.index)] = pre_info_list
 
                 selen_ob.switch_to_window_2()
 
-                enter_packspec_info(selen_ob, part_number, pkg_num)
+                was_there_error = enter_packspec_info(selen_ob, part_number, pkg_num, post_info_list)
 
                 selen_ob.switch_to_window_1()
 
                 print("post-info ================")
 
-                enter_trans_code(selen_ob, '/n/scwm/packspec')
-                read_sap_packspec_data(selen_ob, part_number, post_info_list)
-                enter_trans_code(selen_ob, '/n/scwm/mon')
-                read_uom_table(selen_ob, part_number, post_info_list)
+                if not was_there_error:
+                    print("Success when sending packspec ***")
+                    enter_trans_code(selen_ob, '/n/scwm/packspec')
+                    read_sap_packspec_data(selen_ob, part_number, post_info_list)
+                    enter_trans_code(selen_ob, '/n/scwm/mon')
+                    read_uom_table(selen_ob, part_number, post_info_list)
 
-                if pre_info_list[0] != post_info_list[0]:
-                    post_info_list.append('Yes')
-                else:
-                    post_info_list.append('No')
+                    read_rt3_data(part_number, post_info_list)
+
+                    if pre_info_list[0] != post_info_list[0]:
+                        post_info_list.append('Yes')
+                    else:
+                        post_info_list.append('No')
+
                 post_info_df.loc[len(post_info_df.index)] = post_info_list
 
-                read_rt3_data(part_number)
-
                 num = num + 1
-                print('end ========================\n')
+                print("end ------------------------------\n")
 
             else:
                 part_number = str(full_info_df['Part Number'].iloc[:, 0].iloc[row])
-                pkg_num = str(full_info_df['Pkg Num'].iloc[:, 0].iloc[row])
+                pkg_num = str(full_info_df['Pkg Material'].iloc[:, 0].iloc[row])
                 post_info_list = []
 
+                print("beg ------------------------------")
                 print('Beginning line: ' + str(row_to_start_index + num + 1) + ' of: ' + str(length))
+                print('Part Number: ' + part_number)
 
                 selen_ob.wait(10)
                 selen_ob.switch_to_window_2()
 
-                enter_packspec_info(selen_ob, part_number, pkg_num)
+                was_there_error = enter_packspec_info(selen_ob, part_number, pkg_num, post_info_list)
 
                 selen_ob.switch_to_window_1()
 
                 print("post-info ================")
 
                 go_into_packspec_menu(selen_ob)
-                read_sap_packspec_data(selen_ob, part_number, post_info_list)
-                go_into_mon_menu(selen_ob)
-                read_uom_table(selen_ob, part_number, post_info_list)
 
-                before_change_date = str(full_info_df['Date'].iloc[:, 0].iloc[row])
-                if before_change_date != post_info_list[0]:
-                    post_info_list.append('Yes')
-                else:
-                    post_info_list.append('No')
+                if not was_there_error:
+                    print("Success when sending packspec ***")
+                    read_sap_packspec_data(selen_ob, part_number, post_info_list)
+                    go_into_mon_menu(selen_ob)
+                    read_uom_table(selen_ob, part_number, post_info_list)
+
+                    read_rt3_data(part_number, post_info_list)
+
+                    before_change_date = str(full_info_df['Date'].iloc[:, 0].iloc[row])
+                    if before_change_date != post_info_list[0]:
+                        post_info_list.append('Yes')
+                    else:
+                        post_info_list.append('No')
+
                 post_info_df.loc[len(post_info_df.index)] = post_info_list
 
-                read_rt3_data(part_number)
-
                 num = num + 1
-                print('end ========================\n')
+                print("end ------------------------------\n")
 
     finally:
         # first setup for exporting script results, get time stamp, directory and screenshot paths - don't change
@@ -387,13 +455,13 @@ def main():
 
         with pd.ExcelWriter(packspec_testing_file_path, mode="a", engine="openpyxl",
                             if_sheet_exists="overlay") as writer:
-            pre_info_df.style.set_properties(**{'background-color': '#B4C6E7', 'color': 'black'}).to_excel \
+            pre_info_df.style.set_properties(**{'background-color': '#B4C6E7', 'color': 'black', 'border': '1.3px solid black'}).to_excel \
                 (writer, sheet_name="Pre_Info", header=False, startrow=row_to_start_index + 1, startcol=2,
                  index=False)
 
         with pd.ExcelWriter(packspec_testing_file_path, mode="a", engine="openpyxl",
                             if_sheet_exists="overlay") as writer:
-            post_info_df.style.set_properties(**{'background-color': '#C6E0B4', 'color': 'black'}).to_excel \
+            post_info_df.style.set_properties(**{'background-color': '#C6E0B4', 'color': 'black', 'border': '1.3px solid black'}).to_excel \
                 (writer, sheet_name="Post_Info", header=False, startrow=row_to_start_index + 1, startcol=2,
                  index=False)
 
